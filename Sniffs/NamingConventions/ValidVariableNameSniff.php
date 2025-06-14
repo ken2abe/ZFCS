@@ -51,8 +51,9 @@ class ZFCS_Sniffs_NamingConventions_ValidVariableNameSniff
      */
     protected function processVariable(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
     {
-        $tokens  = $phpcsFile->getTokens();
-        $varName = ltrim($tokens[$stackPtr]['content'], '$');
+        $tokens          = $phpcsFile->getTokens();
+        $varName         = ltrim($tokens[$stackPtr]['content'], '$');
+        $originalVarName = $varName;
 
         $phpReservedVars = array(
             '_SERVER',
@@ -117,8 +118,14 @@ class ZFCS_Sniffs_NamingConventions_ValidVariableNameSniff
      */
     protected function processMemberVar(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
     {
-        $tokens  = $phpcsFile->getTokens();
-        $varName = ltrim($tokens[$stackPtr]['content'], '$');
+        $tokens          = $phpcsFile->getTokens();
+        $varName         = ltrim($tokens[$stackPtr]['content'], '$');
+        $memberProps     = $phpcsFile->getMemberProperties($stackPtr);
+        $public          = true;
+
+        if (isset($memberProps['scope']) === true && $memberProps['scope'] === 'private') {
+            $public = false;
+        }
 
         if (PHP_CodeSniffer::isCamelCaps($varName, false, $public, false) === false) {
             $error = 'Variable "%s" is not in valid camel caps format';
@@ -141,7 +148,8 @@ class ZFCS_Sniffs_NamingConventions_ValidVariableNameSniff
      */
     protected function processVariableInString(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
     {
-        $tokens = $phpcsFile->getTokens();
+        $tokens          = $phpcsFile->getTokens();
+        $originalVarName = $tokens[$stackPtr]['content'];
 
         $phpReservedVars = array(
             '_SERVER',
