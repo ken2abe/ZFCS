@@ -19,7 +19,7 @@
  */
 
 /**
- * This sniff checks for propper variable naming.
+ * This sniff checks for proper variable naming.
  *
  * All variables must be camel-cased and *should* not contain numbers.
  *
